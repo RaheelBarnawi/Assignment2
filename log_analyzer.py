@@ -21,6 +21,14 @@ if (question_number == "-q1"):
 
 elif (question_number == "-q2"):
     print (" Q2: sessions of user 'achille'")
+    user_iliad = sc.textFile(input_text_file_1). \
+        filter(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+        filter(lambda x: 'Starting session'.lower()). \
+        map(lambda x: x.split(" ")). \
+        filter(lambda x: 'achille' in x). \
+        count()
+    print '+ iliad:', user_iliad
+    print (" Q2: sessions of user 'achille'")
 elif (question_number == "-q3"):
     print ("* Q3: unique user names")
 elif (question_number == "-q4"):
