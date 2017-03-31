@@ -18,6 +18,7 @@ if (question_number == "-q1"):
     print '+ iliad:', counts_iliad
     print '+ odyssey:', counts_odyssey
 
+
 elif (question_number == "-q2"):
     print (" Q2: sessions of user 'achille'")
 elif (question_number == "-q3"):
