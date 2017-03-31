@@ -22,15 +22,31 @@ if (question_number == "-q1"):
 elif (question_number == "-q2"):
     print (" Q2: sessions of user 'achille'")
     user_iliad = sc.textFile(input_text_file_1). \
-        filter(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+        map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+        filter(lambda x: 'Starting session'.lower()). \
+        map(lambda x: x.split(" ")). \
+        filter(lambda x: 'achille' in x). \
+        count()
+    user_odyssey = sc.textFile(input_text_file_2). \
+        map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
         filter(lambda x: 'Starting session'.lower()). \
         map(lambda x: x.split(" ")). \
         filter(lambda x: 'achille' in x). \
         count()
     print '+ iliad:', user_iliad
-    print (" Q2: sessions of user 'achille'")
+    print '+ odysse:',user_odyssey
+
 elif (question_number == "-q3"):
     print ("* Q3: unique user names")
+    # we could use df after the first filter
+    print ("* Q3: unique user names")
+    unique_user_iliad = sc.textFile(input_text_file_1). \
+        map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+        filter(lambda x: 'Starting session'.lower()). \
+        map(lambda x: x.split(" ")). \
+        filter(lambda x: (x[10])).\
+        distinct()
+    print '+ iliad:', unique_user_iliad
 elif (question_number == "-q4"):
     print (" * Q4: sessions per user")
 elif (question_number == "-q5"):
