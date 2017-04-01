@@ -84,7 +84,18 @@ elif (question_number == "-q5"):
 elif (question_number == "-q6"):
     print (" * Q6: 5 most frequent error messages")
 elif (question_number == "-q7"):
-    print (" * Q7: users who started a session on both hosts, i.e., on exactly 2 hosts.")
+    print ("* Q7: users who started a session on both hosts, i.e., on exactly 2 hosts.")
+    unique_user_iliad = sc.textFile(input_text_file_1). \
+                        map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+                        filter(lambda x: 'Starting session'.lower() in x). \
+                        map(lambda x: (extract_user(x))).distinct()
+    unique_user_odyssey = sc.textFile(input_text_file_2). \
+                          map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+                          filter(lambda x: 'Starting session'.lower() in x). \
+                          map(lambda x: (extract_user(x))).distinct()
+    result = unique_user_iliad.intersection(unique_user_odyssey)
+    print '+:', result.collect()
+
 elif (question_number == "-q8"):
     print (" * Q8: users who started a session on exactly one host, with host name.")
 elif (question_number == "-q9"):
