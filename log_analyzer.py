@@ -98,6 +98,21 @@ elif (question_number == "-q7"):
 
 elif (question_number == "-q8"):
     print (" * Q8: users who started a session on exactly one host, with host name.")
+    unique_user_iliad = sc.textFile(input_text_file_1). \
+                        map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+                        filter(lambda x: 'Starting session'.lower() in x). \
+                        map(lambda x: (extract_user(x))).distinct(). \
+                        map(lambda x: (x, "iliad"))
+
+    unique_user_odyssey = sc.textFile(input_text_file_2). \
+                          map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+                          filter(lambda x: 'Starting session'.lower() in x). \
+                          map(lambda x: (extract_user(x))).distinct(). \
+                          map(lambda x: (x, "odyssey"))
+
+    result = unique_user_odyssey.union(unique_user_iliad)
+    print '+:', result.collect()
+
 elif (question_number == "-q9"):
     print (" ---------")
 
