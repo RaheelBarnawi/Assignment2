@@ -1,7 +1,11 @@
 # !/usr/bin/env python
 import sys
+import re
 from pyspark import SparkContext, SparkConf
+def extract_user(line_user):
+    return (re.sub('^(.*user )', "", line_user))
 
+if __name__ == "__main__":
 conf = SparkConf().setAppName("log_analyzer").setMaster("local")
 sc = SparkContext(conf=conf)
 if __name__=="__main __":
@@ -34,17 +38,22 @@ elif (question_number == "-q2"):
     print '+ iliad:', user_iliad
     print '+ odysse:',user_odyssey
 
-elif (question_number == "-q3"):
-    print ("* Q3: unique user names")
-    # we could use df after the first filter
-    print ("* Q3: unique user names")
-    unique_user_iliad = sc.textFile(input_text_file_1). \
-        map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
-        filter(lambda x: 'Starting session'.lower()). \
-        map(lambda x: x.split(" ")). \
-        filter(lambda x: (x[10])).\
-        distinct()
-    print '+ iliad:', unique_user_iliad
+elif (question_number=="-q3"):
+        print ("* Q3: unique user names")
+        unique_user_iliad= sc.textFile(input_text_file_1).\
+                           map(lambda x:x.replace(',',' ').replace('.',' ').lower()).\
+                           filter(lambda x: 'Starting session'.lower() in x).\
+                           map(lambda x: (extract_user(x))).distinct().collect()
+        unique_user_odysse = sc.textFile(input_text_file_2). \
+                             map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+                             filter(lambda x: 'Starting session'.lower() in x). \
+                             map(lambda x: (extract_user(x))).distinct().collect()
+
+        print '+ iliad:', unique_user_iliad
+        print '+ odysse:', unique_user_odysse
+
+
+
 elif (question_number == "-q4"):
     print (" * Q4: sessions per user")
 
