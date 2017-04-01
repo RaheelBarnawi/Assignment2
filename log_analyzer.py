@@ -55,16 +55,21 @@ elif (question_number=="-q3"):
 
 
 elif (question_number == "-q4"):
-    print (" * Q4: sessions per user")
+    print ("* Q4: sessions per user")
+    unique_user_iliad = sc.textFile(input_text_file_1). \
+                        map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+                        filter(lambda x: 'Starting session'.lower() in x). \
+                        map(lambda x: (extract_user(x), 1)). \
+                        reduceByKey(lambda x, y: x + y).collect()
+    unique_user_odysse = sc.textFile(input_text_file_2). \
+                        map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+                        filter(lambda x: 'Starting session'.lower() in x). \
+                        map(lambda x: (extract_user(x), 1)). \
+                        reduceByKey(lambda x, y: x + y).collect()
 
-    unique_user_count_iliad = sc.textFile(input_text_file_1). \
-        map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
-        filter(lambda x: 'Starting session'.lower()). \
-        map(lambda x: x.split(" ")). \
-        filter(lambda x: (x[10])). \
-        map(lambda x: (x, 1)).reduceByKey(lambda x, y: x + 1).\
-        distinct()
-    print '+ iliad:', unique_user_count_iliad
+    print '+ iliad:', unique_user_iliad
+    print '+ odysse:', unique_user_odysse
+
 elif (question_number == "-q5"):
     print (" * Q5: number of errors")
 elif (question_number == "-q6"):
