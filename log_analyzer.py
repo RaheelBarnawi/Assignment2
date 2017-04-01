@@ -72,6 +72,15 @@ elif (question_number == "-q4"):
 
 elif (question_number == "-q5"):
     print (" * Q5: number of errors")
+    unique_user_iliad = sc.textFile(input_text_file_1). \
+                        map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+                        filter(lambda x: 'error'.lower() in x).count()
+    unique_user_odyssey = sc.textFile(input_text_file_2). \
+                          map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+                          filter(lambda x: 'error'.lower() in x).count()
+    print '+ iliad:', unique_user_iliad
+    print '+ odyssey:', unique_user_odyssey
+
 elif (question_number == "-q6"):
     print (" * Q6: 5 most frequent error messages")
 elif (question_number == "-q7"):
