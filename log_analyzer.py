@@ -117,8 +117,13 @@ elif (question_number == "-q8"):
     print '+:', rdd.union(rdd1).collect()
 
 
-elif (question_number == "-q9"):
-    print (" ---------")
+elif (question_number=="-q9"):
+         print ("* Q9: Anonymize the logs.")
+         unique_user_iliad= sc.textFile(input_text_file_1).\
+                           map(lambda x:x.replace(',',' ').replace('.',' ').lower()).\
+                           filter(lambda x: 'Starting session'.lower() in x).\
+                           map(lambda x: (extract_user(x))).distinct()
+         print '+ iliad:', unique_user_iliad.zipWithIndex().collect()
 
 
 
