@@ -5,6 +5,11 @@ from pyspark import SparkContext, SparkConf
 def extract_user(line_user):
     return (re.sub('^(.*user )', "", line_user))
 
+def format_tuple(tuple_id):
+    tuple_value= tuple_id[1]
+    format_usrer= "usrer-"+str(tuple_value)
+    return (tuple_id[0],format_usrer)
+
 if __name__ == "__main__":
 conf = SparkConf().setAppName("log_analyzer").setMaster("local")
 sc = SparkContext(conf=conf)
@@ -123,8 +128,8 @@ elif (question_number=="-q9"):
                            map(lambda x:x.replace(',',' ').replace('.',' ').lower()).\
                            filter(lambda x: 'Starting session'.lower() in x).\
                            map(lambda x: (extract_user(x))).distinct()
-         print '+ iliad:', unique_user_iliad.zipWithIndex().collect()
-
+         result = unique_user_iliad.zipWithIndex().collect()
+         print map(format_tuple, result)
 
 
 
