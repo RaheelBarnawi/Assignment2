@@ -10,6 +10,13 @@ def format_tuple(tuple_id):
     format_usrer= "usrer-"+str(tuple_value)
     return (tuple_id[0],format_usrer)
 
+def findErrorLine(line):
+    result= re.findall('(?i)error', line)
+    if(len(result)>0):
+        return True
+    else:
+        return False
+
 if __name__ == "__main__":
 conf = SparkConf().setAppName("log_analyzer").setMaster("local")
 sc = SparkContext(conf=conf)
@@ -88,11 +95,12 @@ elif (question_number == "-q5"):
 
 
 elif (question_number == "-q6"):
-    print (" * Q6: 5 most frequent error messages")
     unique_user_iliad = sc.textFile(input_text_file_1). \
         filter(lambda x: findErrorLine(x) == True). \
-        map(lambda x: (x, 1)).reduceByKey(lambda x, y: x + y)
-    print unique_user_iliad.take(5)
+        map(lambda x: (x, 1)). \
+        reduceByKey(lambda x, y: x + y)
+    print unique_user_iliad.takeOrdered(10, key=lambda x: -x[1])
+
 elif (question_number == "-q7"):
     print ("* Q7: users who started a session on both hosts, i.e., on exactly 2 hosts.")
     unique_user_iliad = sc.textFile(input_text_file_1). \
