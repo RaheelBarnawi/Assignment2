@@ -103,7 +103,22 @@ elif (question_number=="-q6"):
                             filter(lambda x: findErrorLine(x)== True).\
                             map(lambda x: (x,1)).\
                             reduceByKey(lambda x,y: x+y)
-         print unique_user_iliad.takeOrdered(5, key = lambda x: -x[1])
+         result_iliad = unique_user_iliad.takeOrdered(5, key=lambda x: -x[1])
+
+         unique_user_odyssey = sc.textFile(input_text_file_2). \
+                               map(lambda x: remove_date_format(x)). \
+                               filter(lambda x: findErrorLine(x) == True). \
+                               map(lambda x: (x, 1)). \
+                               reduceByKey(lambda x, y: x + y)
+        result_odyssey = unique_user_odyssey.takeOrdered(5, key=lambda x: -x[1])
+
+         print '+iliad'
+         for x in result_iliad:
+             print (x[1], x[0])
+         print '+odyssey:'
+         for y in result_odyssey:
+             print (y[1], y[0])
+
 
 elif (question_number == "-q7"):
     print ("* Q7: users who started a session on both hosts, i.e., on exactly 2 hosts.")
