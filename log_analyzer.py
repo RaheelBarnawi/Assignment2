@@ -17,6 +17,9 @@ def findErrorLine(line):
     else:
         return False
 
+def remove_date_format(line):
+    return (re.sub('[A-Za-z]{3}\s+\d{1,2}\s(?:\d{1,2}:){2}\d{1,2}'," ",line))
+
 if __name__ == "__main__":
 conf = SparkConf().setAppName("log_analyzer").setMaster("local")
 sc = SparkContext(conf=conf)
@@ -94,12 +97,13 @@ elif (question_number == "-q5"):
     print '+ odyssey:', unique_user_odyssey
 
 
-elif (question_number == "-q6"):
-    unique_user_iliad = sc.textFile(input_text_file_1). \
-        filter(lambda x: findErrorLine(x) == True). \
-        map(lambda x: (x, 1)). \
-        reduceByKey(lambda x, y: x + y)
-    print unique_user_iliad.takeOrdered(10, key=lambda x: -x[1])
+elif (question_number=="-q6"):
+         unique_user_iliad= sc.textFile(input_text_file_1).\
+                            map(lambda x : remove_date_format(x)).\
+                            filter(lambda x: findErrorLine(x)== True).\
+                            map(lambda x: (x,1)).\
+                            reduceByKey(lambda x,y: x+y)
+         print unique_user_iliad.takeOrdered(5, key = lambda x: -x[1])
 
 elif (question_number == "-q7"):
     print ("* Q7: users who started a session on both hosts, i.e., on exactly 2 hosts.")
