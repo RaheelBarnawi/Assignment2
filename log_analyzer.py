@@ -20,6 +20,26 @@ def findErrorLine(line):
 def remove_date_format(line):
     return (re.sub('[A-Za-z]{3}\s+\d{1,2}\s(?:\d{1,2}:){2}\d{1,2}'," ",line))
 
+
+def replace_fun(line, tup):
+    flag = False
+    m = ""
+    new_line = line
+    for x in tup:
+
+        if (x[0] in line):
+            # print 'x[0]', x[0]
+            # print' line',line
+            m = line.replace(x[0], x[1])
+            # print 'line before', m
+            flag = True
+
+    if (flag == False):
+        return new_line
+    else:
+        return m
+
+
 if __name__ == "__main__":
 conf = SparkConf().setAppName("log_analyzer").setMaster("local")
 sc = SparkContext(conf=conf)
