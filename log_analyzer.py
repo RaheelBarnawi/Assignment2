@@ -175,14 +175,36 @@ elif (question_number == "-q8"):
 
 
 elif (question_number=="-q9"):
-         print ("* Q9: Anonymize the logs.")
-         unique_user_iliad= sc.textFile(input_text_file_1).\
-                           map(lambda x:x.replace(',',' ').replace('.',' ').lower()).\
-                           filter(lambda x: 'Starting session'.lower() in x).\
-                           map(lambda x: (extract_user(x))).distinct()
-         result = unique_user_iliad.sortBy(lambda x: x[0]).zipWithIndex(). \
-                  map(lambda x: format_tuple(x))
-         print result.collect()
+print ("* Q9: Anonymize the logs.")
+unique_user_iliad = sc.textFile(input_text_file_1). \
+    map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+    filter(lambda x: 'Starting session'.lower() in x). \
+    map(lambda x: (extract_user(x))).distinct()
+result = unique_user_iliad.sortBy(lambda x: x[0]).zipWithIndex(). \
+    map(lambda x: format_tuple(x)).collect()
+
+new_file_iliad = sc.textFile(input_text_file_1). \
+    map(lambda x: x.replace(',', ' ').replace('.', ' ')). \
+    map(lambda x: replace_fun(x, result))
+print 'User name mapping:', result
+print'Anonymized files: iliad-anonymized-10'
+new_file_iliad.saveAsTextFile("iliad-anonymized10")
+# ---------------
+unique_user_odyssey = sc.textFile(input_text_file_2). \
+    map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+    filter(lambda x: 'Starting session'.lower() in x). \
+    map(lambda x: (extract_user(x))).distinct()
+result = unique_user_odyssey.sortBy(lambda x: x[0]).zipWithIndex(). \
+    map(lambda x: format_tuple(x)).collect()
+
+new_file_odyssey = sc.textFile(input_text_file_2). \
+    map(lambda x: x.replace(',', ' ').replace('.', ' ')). \
+    map(lambda x: replace_fun(x, result))
+print 'User name mapping:', result
+print'Anonymized files: odyssey-anonymized-10'
+new_file_iliad.saveAsTextFile("odyssey-anonymized10")
+
+
 
 
 
