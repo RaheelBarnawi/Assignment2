@@ -160,7 +160,7 @@ elif (question_number=="-q9"):
                            map(lambda x:x.replace(',',' ').replace('.',' ').lower()).\
                            filter(lambda x: 'Starting session'.lower() in x).\
                            map(lambda x: (extract_user(x))).distinct()
-         result = unique_user_iliad.zipWithIndex(). \
+         result = unique_user_iliad.sortBy(lambda x: x[0]).zipWithIndex(). \
                   map(lambda x: format_tuple(x))
          print result.collect()
 
