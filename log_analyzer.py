@@ -6,12 +6,10 @@ import re
 def extract_user(line_user):
     return (re.sub('^(.*user )', "", line_user))
 
-
 def format_tuple(tuple_id):
     tuple_value = tuple_id[1]
     format_usrer = "user-" + str(tuple_value)
     return (tuple_id[0], format_usrer)
-
 
 def findErrorLine(line):
     result = re.findall('(?i)error', line)
@@ -20,31 +18,24 @@ def findErrorLine(line):
     else:
         return False
 
-
 def remove_date_format(line):
     return (re.sub('[A-Za-z]{3}\s+\d{1,2}\s(?:\d{1,2}:){2}\d{1,2}', " ", line))
 
-
 def zip_function(value, index):
     return (value, index)
-
 
 def replace_fun(line, tup):
     flag = False
     m = ""
     new_line = line
     for x in tup:
-
         if (x[0] in line):
             m = line.replace(x[0], x[1])
-
             flag = True
-
     if (flag == False):
         return new_line
     else:
         return m
-
 
 if __name__ == "__main__":
     conf = SparkConf().setAppName("wordcount").setMaster("local")
@@ -60,8 +51,6 @@ if __name__ == "__main__":
             count()
         print '+ iliad:', counts_iliad
         print '+ odyssey:', counts_odyssey
-
-
 
     elif (question_number == "-q2"):
         # we could use regex ("Starting session\s+\d\s+ of user\[A-Za-z]")
