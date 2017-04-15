@@ -68,126 +68,145 @@ if __name__ == "__main__":
             filter(lambda x: 'achille' in x).count()
         print '+ odyssey:', unique_user_odyssey
 
+    elif (question_number == "-q3"):
+        print ("* Q3: unique user names")
+        unique_user_iliad = sc.textFile(iliad). \
+            map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+            filter(lambda x: 'Starting session'.lower() in x). \
+            map(lambda x: (extract_user(x))).distinct().collect()
+        print '+ iliad:', unique_user_iliad
+
+        unique_user_odyssey = sc.textFile(odyssey). \
+            map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+            filter(lambda x: 'Starting session'.lower() in x). \
+            map(lambda x: (extract_user(x))).distinct().collect()
+        print '+ odyssey:', unique_user_odyssey
+
+    elif (question_number == "-q4"):
+        print ("* Q4: sessions per user")
+        unique_user_iliad = sc.textFile(iliad). \
+            map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+            filter(lambda x: 'Starting session'.lower() in x). \
+            map(lambda x: (extract_user(x), 1)). \
+            reduceByKey(lambda x, y: x + y).collect()
+        print '+ iliad:', unique_user_iliad
+
+        unique_user_odyssey = sc.textFile(odyssey). \
+            map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+            filter(lambda x: 'Starting session'.lower() in x). \
+            map(lambda x: (extract_user(x), 1)). \
+            reduceByKey(lambda x, y: x + y).collect()
+        print '+ odyssey:', unique_user_odyssey
+
+    elif (question_number == "-q5"):
+        print ("* Q5: number of errors")
+        # we can use regex
+        unique_user_iliad = sc.textFile(iliad). \
+            map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+            filter(lambda x: 'error'.lower() in x).count()
+        unique_user_odyssey = sc.textFile(odyssey). \
+            map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+            filter(lambda x: 'error'.lower() in x).count()
+        print '+ iliad:', unique_user_iliad
+        print '+ odyssey:', unique_user_odyssey
+
+    elif (question_number == "-q6"):
+        unique_user_iliad = sc.textFile(iliad). \
+            map(lambda x: remove_date_format(x)). \
+            filter(lambda x: findErrorLine(x) == True). \
+            map(lambda x: (x, 1)). \
+            reduceByKey(lambda x, y: x + y)
+        result_iliad = unique_user_iliad.takeOrdered(5, key=lambda x: -x[1])
+
+        unique_user_odyssey = sc.textFile(odyssey). \
+            map(lambda x: remove_date_format(x)). \
+            filter(lambda x: findErrorLine(x) == True). \
+            map(lambda x: (x, 1)). \
+            reduceByKey(lambda x, y: x + y)
+        result_odyssey = unique_user_odyssey.takeOrdered(5, key=lambda x: -x[1])
+
+        print '+iliad'
+        for x in result_iliad:
+            print (x[1], x[0])
+        print '+odyssey:'
+        for y in result_odyssey:
+            print (y[1], y[0])
+
+
+    elif (question_number == "-q7"):
+
+        unique_user_iliad = sc.textFile(iliad). \
+            map(lambda x: x.replace(',', '').replace('.', '')). \
+            filter(lambda x: 'Starting Session' in x). \
+            map(lambda x: (extract_user(x))).distinct()
+        unique_user_odyssey = sc.textFile(odyssey). \
+            map(lambda x: x.replace(',', '').replace('.', '')). \
+            filter(lambda x: 'Starting Session' in x). \
+            map(lambda x: (extract_user(x))).distinct()
+        result = unique_user_iliad.intersection(unique_user_odyssey).collect()
+        print ("* Q7: users who started a session on both hosts, i.e., on exactly 2 hosts.")
+        print '+:', result
+
+    elif (question_number == "-q8"):
+
+        unique_user_iliad = sc.textFile(iliad). \
+            map(lambda x: x.replace(',', '').replace('.', '')). \
+            filter(lambda x: 'Starting Session' in x). \
+            map(lambda x: (extract_user(x))). \
+            map(lambda x: (x, "iliad"))
+
+        unique_user_odyssey = sc.textFile(odyssey). \
+            map(lambda x: x.replace(',', '').replace('.', '')). \
+            filter(lambda x: 'Starting Session' in x). \
+            map(lambda x: (extract_user(x))). \
+            map(lambda x: (x, "odyssey"))
+        re1 = unique_user_iliad.subtractByKey(unique_user_odyssey)
+        re2 = unique_user_odyssey.subtractByKey(unique_user_iliad)
+        rdd1 = re1.distinct()
+        rdd = re2.distinct()
+        print ("* Q8: users who started a session on exactly one host, with host name.")
+        print '+:', rdd.union(rdd1).collect()
+
+
+    elif (question_number == "-q9"):
+
+        unique_user_iliad = sc.textFile(iliad). \
+            map(lambda x: x.replace(',', '').replace('.', '')). \
+            filter(lambda x: 'Starting Session' in x). \
+            map(lambda x: (extract_user(x))).distinct(). \
+            map(lambda x: (x, 0)).sortByKey(). \
+            map(lambda x: x[0]).zipWithIndex()
+        result_iliad = unique_user_iliad.map(lambda x: format_tuple(x)).collect()
+        new_file_iliad = sc.textFile(iliad). \
+            map(lambda x: replace_fun(x, result_iliad))
+
+        unique_user_odyssey = sc.textFile(odyssey). \
+            map(lambda x: x.replace(',', '').replace('.', '')). \
+            filter(lambda x: 'Starting Session' in x). \
+            map(lambda x: (extract_user(x))).distinct(). \
+            map(lambda x: (x, 0)).sortByKey(). \
+            map(lambda x: x[0]).zipWithIndex()
+        result_odyssey = unique_user_odyssey.map(lambda x: format_tuple(x)).collect()
+        new_file_odyssey = sc.textFile(odyssey). \
+            map(lambda x: replace_fun(x, result_odyssey))
+
+        print 'User name mapping:', result_iliad
+        print'Anonymized files: iliad-anonymized-10'
+        new_file_iliad.saveAsTextFile("iliad-anonymized10")
+
+        print 'User name mapping:', result_odyssey
+        print'Anonymized files: odyssey-anonymized-10'
+        new_file_odyssey.saveAsTextFile("odyssey-anonymized10")
 
 
 
 
 
 
-elif (question_number == "-q4"):
-    print ("* Q4: sessions per user")
-    unique_user_iliad = sc.textFile(input_text_file_1). \
-        map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
-        filter(lambda x: 'Starting session'.lower() in x). \
-        map(lambda x: (extract_user(x), 1)). \
-        reduceByKey(lambda x, y: x + y).collect()
-    unique_user_odysse = sc.textFile(input_text_file_2). \
-        map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
-        filter(lambda x: 'Starting session'.lower() in x). \
-        map(lambda x: (extract_user(x), 1)). \
-        reduceByKey(lambda x, y: x + y).collect()
-
-    print '+ iliad:', unique_user_iliad
-    print '+ odysse:', unique_user_odysse
-
-elif (question_number == "-q5"):
-    print (" * Q5: number of errors")
-    unique_user_iliad = sc.textFile(input_text_file_1). \
-        map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
-        filter(lambda x: 'error'.lower() in x).count()
-    unique_user_odyssey = sc.textFile(input_text_file_2). \
-        map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
-        filter(lambda x: 'error'.lower() in x).count()
-    print '+ iliad:', unique_user_iliad
-    print '+ odyssey:', unique_user_odyssey
 
 
-elif (question_number=="-q6"):
-    unique_user_iliad= sc.textFile(input_text_file_1). \
-        map(lambda x : remove_date_format(x)). \
-        filter(lambda x: findErrorLine(x)== True). \
-        map(lambda x: (x,1)). \
-        reduceByKey(lambda x,y: x+y)
-    result_iliad = unique_user_iliad.takeOrdered(5, key=lambda x: -x[1])
-
-    unique_user_odyssey = sc.textFile(input_text_file_2). \
-        map(lambda x: remove_date_format(x)). \
-        filter(lambda x: findErrorLine(x) == True). \
-        map(lambda x: (x, 1)). \
-        reduceByKey(lambda x, y: x + y)
-     result_odyssey = unique_user_odyssey.takeOrdered(5, key=lambda x: -x[1])
-
-print '+iliad'
-for x in result_iliad:
-    print (x[1], x[0])
-print '+odyssey:'
-for y in result_odyssey:
-    print (y[1], y[0])
 
 
-elif (question_number == "-q7"):
-print ("* Q7: users who started a session on both hosts, i.e., on exactly 2 hosts.")
-unique_user_iliad = sc.textFile(input_text_file_1). \
-    map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
-    filter(lambda x: 'Starting session'.lower() in x). \
-    map(lambda x: (extract_user(x))).distinct()
-unique_user_odyssey = sc.textFile(input_text_file_2). \
-    map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
-    filter(lambda x: 'Starting session'.lower() in x). \
-    map(lambda x: (extract_user(x))).distinct()
-result = unique_user_iliad.intersection(unique_user_odyssey)
-print '+:', result.collect()
-
-elif (question_number == "-q8"):
-print (" * Q8: users who started a session on exactly one host, with host name.")
-unique_user_iliad = sc.textFile(input_text_file_1). \
-    map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
-    filter(lambda x: 'Starting session'.lower() in x). \
-    map(lambda x: (extract_user(x))). \
-    map(lambda x: (x, "iliad"))
-
-unique_user_odyssey = sc.textFile(input_text_file_2). \
-    map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
-    filter(lambda x: 'Starting session'.lower() in x). \
-    map(lambda x: (extract_user(x))). \
-    map(lambda x: (x, "odyssey"))
-
-re1 = unique_user_iliad.subtractByKey(unique_user_odyssey)
-re2 = unique_user_odyssey.subtractByKey(unique_user_iliad)
-rdd1 = re1.distinct()
-rdd = re2.distinct()
-print '+:', rdd.union(rdd1).collect()
-
-
-elif (question_number=="-q9"):
-print ("* Q9: Anonymize the logs.")
-unique_user_iliad = sc.textFile(input_text_file_1). \
-    map(lambda x: x.replace(',', ' ').replace('.', '').lower()). \
-    filter(lambda x: 'Starting session'.lower() in x). \
-    map(lambda x: (extract_user(x))).distinct()
-result = unique_user_iliad.sortBy(lambda x: x[0]).zipWithIndex(). \
-    map(lambda x: format_tuple(x)).collect()
-
-new_file_iliad = sc.textFile(input_text_file_1). \
-    map(lambda x: x.replace(',', ' ').replace('.', ' ')). \
-    map(lambda x: replace_fun(x, result))
-print 'User name mapping:', result
-print'Anonymized files: iliad-anonymized-10'
-new_file_iliad.saveAsTextFile("iliad-anonymized10")
-# ---------------
-unique_user_odyssey = sc.textFile(input_text_file_2). \
-    map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
-    filter(lambda x: 'Starting session'.lower() in x). \
-    map(lambda x: (extract_user(x))).distinct()
-result = unique_user_odyssey.sortBy(lambda x: x[0]).zipWithIndex(). \
-    map(lambda x: format_tuple(x)).collect()
-
-new_file_odyssey = sc.textFile(input_text_file_2). \
-    map(lambda x: x.replace(',', ' ').replace('.', ' ')). \
-    map(lambda x: replace_fun(x, result))
-print 'User name mapping:', result
-print'Anonymized files: odyssey-anonymized-10'
-new_file_iliad.saveAsTextFile("odyssey-anonymized10")
 
 
 
