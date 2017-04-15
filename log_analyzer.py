@@ -1,24 +1,32 @@
 # !/usr/bin/env python
 import sys
-import re
 from pyspark import SparkContext, SparkConf
+import re
+
 def extract_user(line_user):
     return (re.sub('^(.*user )', "", line_user))
 
+
 def format_tuple(tuple_id):
-    tuple_value= tuple_id[1]
-    format_usrer= "usrer-"+str(tuple_value)
-    return (tuple_id[0],format_usrer)
+    tuple_value = tuple_id[1]
+    format_usrer = "user-" + str(tuple_value)
+    return (tuple_id[0], format_usrer)
+
 
 def findErrorLine(line):
-    result= re.findall('(?i)error', line)
-    if(len(result)>0):
+    result = re.findall('(?i)error', line)
+    if (len(result) > 0):
         return True
     else:
         return False
 
+
 def remove_date_format(line):
-    return (re.sub('[A-Za-z]{3}\s+\d{1,2}\s(?:\d{1,2}:){2}\d{1,2}'," ",line))
+    return (re.sub('[A-Za-z]{3}\s+\d{1,2}\s(?:\d{1,2}:){2}\d{1,2}', " ", line))
+
+
+def zip_function(value, index):
+    return (value, index)
 
 
 def replace_fun(line, tup):
@@ -29,7 +37,9 @@ def replace_fun(line, tup):
 
         if (x[0] in line):
             m = line.replace(x[0], x[1])
+
             flag = True
+
     if (flag == False):
         return new_line
     else:
