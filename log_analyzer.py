@@ -51,36 +51,26 @@ if __name__ == "__main__":
         print '+ iliad:', counts_iliad
         print '+ odyssey:', counts_odyssey
 
-        
 
 
-elif (question_number == "-q2"):
-    print (" Q2: sessions of user 'achille'")
-    user_iliad = sc.textFile(input_text_file_1). \
-        map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
-        filter(lambda x: 'Starting session'.lower()). \
-        filter(lambda x: 'achille' in x).count()
+    elif (question_number == "-q2"):
+        # we could use regex ("Starting session\s+\d\s+ of user\[A-Za-z]")
+        print ("* Q2: sessions of user 'achille'")
+        unique_user_iliad = sc.textFile(iliad). \
+            map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+            filter(lambda x: 'Starting session'.lower() in x). \
+            filter(lambda x: 'achille' in x).count()
+        print '+ iliad:', unique_user_iliad
 
-    user_odyssey = sc.textFile(input_text_file_2). \
-        map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
-        filter(lambda x: 'Starting session'.lower()). \
-        filter(lambda x: 'achille' in x).count()
-    print '+ iliad:', user_iliad
-    print '+ odysse:',user_odyssey
+        unique_user_odyssey = sc.textFile(odyssey). \
+            map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
+            filter(lambda x: 'Starting session'.lower() in x). \
+            filter(lambda x: 'achille' in x).count()
+        print '+ odyssey:', unique_user_odyssey
 
-elif (question_number=="-q3"):
-    print ("* Q3: unique user names")
-    unique_user_iliad= sc.textFile(input_text_file_1). \
-        map(lambda x:x.replace(',',' ').replace('.',' ').lower()). \
-        filter(lambda x: 'Starting session'.lower() in x). \
-        map(lambda x: (extract_user(x))).distinct().collect()
-    unique_user_odysse = sc.textFile(input_text_file_2). \
-        map(lambda x: x.replace(',', ' ').replace('.', ' ').lower()). \
-        filter(lambda x: 'Starting session'.lower() in x). \
-        map(lambda x: (extract_user(x))).distinct().collect()
 
-    print '+ iliad:', unique_user_iliad
-    print '+ odysse:', unique_user_odysse
+
+
 
 
 
